@@ -7,8 +7,8 @@ import { Button } from '@/components/ui/button';
 import { CasePreview } from './case-preview';
 import { PhoneSelector } from './phone-selector';
 import { CharmSelector } from './charm-selector';
-import { useCharms } from '../../hooks/use-charms';
-import { usePhoneModels } from '../../hooks/use-phone-models';
+import { useCharms } from '@/hooks/use-charms';
+import { usePhoneModels } from '@/hooks/use-phone-models';
 import { Charm, PhoneModel } from '@/types/case-customizer';
 import { 
   Accordion, 
@@ -80,14 +80,14 @@ export function CaseCustomizer() {
       <div className="w-full mx-auto max-w-[1200px]">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Case preview and phone info */}
-          <div className="space-y-6">
-            <div className="p-6 rounded-lg border shadow-sm">
+          <div className="space-y-2">
+            <div className="p-4 rounded-lg border shadow-sm">
               {/* Selected phone info */}
               <div className="mb-4 text-center">
                 <h2 className="text-xl font-semibold">{selectedPhone.name}</h2>
               </div>
               
-              <div className="h-[500px] flex items-center justify-center">
+              <div className="flex items-center justify-center">
                 <CasePreview 
                   phoneModel={selectedPhone} 
                   placedCharms={placedCharms}

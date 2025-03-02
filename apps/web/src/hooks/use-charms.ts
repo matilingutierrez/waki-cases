@@ -66,7 +66,7 @@ export function useCharms() {
       try {
         setIsLoading(true);
         // Simulate network delay
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        await new Promise(resolve => setTimeout(resolve, 800));
         setCharms(mockCharms);
       } catch (err) {
         setError(err instanceof Error ? err : new Error('Failed to fetch charms'));

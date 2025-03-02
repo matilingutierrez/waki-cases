@@ -8,32 +8,32 @@ const mockPhoneModels: PhoneModel[] = [
   {
     id: 'iphone-15-pro',
     name: 'iPhone 15 Pro',
-    caseImageUrl: 'https://placehold.co/300x600/e2e8f0/1e293b?text=iPhone+15+Pro',
+    caseImageUrl: 'https://placehold.co/300x600/ffffff/00000000',
   },
   {
     id: 'iphone-15',
     name: 'iPhone 15',
-    caseImageUrl: 'https://placehold.co/300x600/e2e8f0/1e293b?text=iPhone+15',
+    caseImageUrl: 'https://placehold.co/300x600/ffffff/00000000',
   },
   {
     id: 'iphone-14-pro',
     name: 'iPhone 14 Pro',
-    caseImageUrl: 'https://placehold.co/300x600/e2e8f0/1e293b?text=iPhone+14+Pro',
+    caseImageUrl: 'https://placehold.co/300x600/ffffff/00000000',
   },
   {
     id: 'iphone-14',
     name: 'iPhone 14',
-    caseImageUrl: 'https://placehold.co/300x600/e2e8f0/1e293b?text=iPhone+14',
+    caseImageUrl: 'https://placehold.co/300x600/ffffff/00000000',
   },
   {
     id: 'samsung-s23',
     name: 'Samsung Galaxy S23',
-    caseImageUrl: 'https://placehold.co/300x600/e2e8f0/1e293b?text=Samsung+S23',
+    caseImageUrl: 'https://placehold.co/300x600/ffffff/00000000',
   },
   {
     id: 'pixel-7',
     name: 'Google Pixel 7',
-    caseImageUrl: 'https://placehold.co/300x600/e2e8f0/1e293b?text=Pixel+7',
+    caseImageUrl: 'https://placehold.co/300x600/ffffff/00000000',
   },
 ];
 
@@ -48,7 +48,7 @@ export function usePhoneModels() {
       try {
         setIsLoading(true);
         // Simulate network delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, 600));
         setPhoneModels(mockPhoneModels);
       } catch (err) {
         setError(err instanceof Error ? err : new Error('Failed to fetch phone models'));
