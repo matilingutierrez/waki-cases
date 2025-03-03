@@ -20,7 +20,7 @@ export function ColorSelector({
   if (isLoading) {
     return (
       <div className="space-y-4">
-        <h3 className="text-lg font-medium">Select Color</h3>
+        <h3 className="text-lg font-medium">Seleccionar Color</h3>
         <div className="grid grid-cols-5 gap-3">
           {Array.from({ length: 5 }).map((_, i) => (
             <div 
@@ -35,7 +35,7 @@ export function ColorSelector({
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-medium">Select Color</h3>
+      <h3 className="text-lg font-medium">Seleccionar Color</h3>
       <div className="grid grid-cols-5 gap-3">
         {colors.map((color) => (
           <button

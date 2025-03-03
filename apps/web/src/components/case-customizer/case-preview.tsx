@@ -16,12 +16,12 @@ export interface CasePreviewProps {
   onCharmRotationUpdated?: (charmId: string, newRotation: number) => void;
 }
 
-// iPhone 13 Pro viewport dimensions
+// Dimensiones del iPhone 13 Pro
 const IPHONE_13_PRO = {
   viewport: { width: 390, height: 844 },
   camera: { width: 147, height: 155 },
   appleLogo: { width: 82, height: 52 },
-  // Add charm dimensions - width is about 2/3 of camera width
+  // Dimensiones del dije - ancho es aproximadamente 2/3 del ancho de la cámara
   charm: { width: 98, height: 49 }
 };
 
@@ -34,9 +34,9 @@ export function CasePreview({
   onCharmPositionUpdated,
   onCharmRotationUpdated
 }: CasePreviewProps) {
-  // Get the viewport dimensions for the iPhone 13 Pro
+  // Obtener las dimensiones del viewport para el iPhone 13 Pro
   const getPhoneDimensions = () => {
-    // Scale down to fit in the UI (about 60% of original size)
+    // Reducir escala para ajustar en la UI (aproximadamente 60% del tamaño original)
     const scaleFactor = 0.5;
     return {
       width: Math.round(IPHONE_13_PRO.viewport.width * scaleFactor),
@@ -44,7 +44,7 @@ export function CasePreview({
     };
   };
   
-  // Calculate camera dimensions based on the same scale factor
+  // Calcular dimensiones de la cámara basado en el mismo factor de escala
   const getCameraDimensions = () => {
     const scaleFactor = 0.6;
     return {
@@ -53,7 +53,7 @@ export function CasePreview({
     };
   };
   
-  // Calculate Apple logo dimensions based on the same scale factor
+  // Calcular dimensiones del logo de Apple basado en el mismo factor de escala
   const getAppleLogoDimensions = () => {
     const scaleFactor = 0.6;
     return {
@@ -127,18 +127,18 @@ export function CasePreview({
     };
   }, []);
   
-  // Handle removing all charms when trash is clicked
+  // Manejar la eliminación de todos los dijes cuando se hace clic en la papelera
   const handleRemoveAllCharms = () => {
     if (placedCharms.length === 0) return;
     
-    // Create a copy of the array to avoid issues with forEach and simultaneous removal
+    // Crear una copia del array para evitar problemas con forEach y eliminación simultánea
     const charmsToRemove = [...placedCharms];
     charmsToRemove.forEach(charm => {
       onCharmRemoved(charm.id);
     });
   };
   
-  // Handle trash bin functionality
+  // Manejar la funcionalidad de la papelera
   const [{ isOverTrash }, trashDrop] = useDrop({
     accept: 'placed-charm',
     collect: (monitor) => ({
@@ -150,64 +150,64 @@ export function CasePreview({
     },
   });
   
-  // Function to darken a color by a percentage
+  // Función para oscurecer un color por un porcentaje
   const darkenColor = (color: string, percent: number) => {
-    // Remove the # if present
+    // Eliminar el # si está presente
     const hex = color.replace('#', '');
     
-    // Parse the hex values
+    // Analizar los valores hex
     const r = parseInt(hex.substring(0, 2), 16);
     const g = parseInt(hex.substring(2, 4), 16);
     const b = parseInt(hex.substring(4, 6), 16);
     
-    // Calculate darker values
+    // Calcular valores más oscuros
     const darkerR = Math.floor(r * (1 - percent / 100));
     const darkerG = Math.floor(g * (1 - percent / 100));
     const darkerB = Math.floor(b * (1 - percent / 100));
     
-    // Convert back to hex
+    // Convertir de vuelta a hex
     return `#${darkerR.toString(16).padStart(2, '0')}${darkerG.toString(16).padStart(2, '0')}${darkerB.toString(16).padStart(2, '0')}`;
   };
   
-  // Get camera color based on phone color
+  // Obtener el color de la cámara basado en el color del teléfono
   const getCameraColor = () => {
-    if (!phoneColor) return '#1a1a1a'; // Default dark color
+    if (!phoneColor) return '#1a1a1a'; // Color oscuro por defecto
     
-    // For very dark colors, use a slightly lighter shade
+    // Para colores muy oscuros, usar un tono ligeramente más claro
     if (phoneColor.name === 'graphite' || phoneColor.name === 'midnight') {
       return '#2a2a2a';
     }
     
-    // For other colors, darken the phone color by 40%
+    // Para otros colores, oscurecer el color del teléfono en un 40%
     return darkenColor(phoneColor.colorCode, 40);
   };
   
-  // Get Apple logo color based on phone color
+  // Obtener el color del logo de Apple basado en el color del teléfono
   const getAppleLogoColor = () => {
-    if (!phoneColor) return '#999'; // Default gray color
+    if (!phoneColor) return '#999'; // Color gris por defecto
     
-    // For midnight and blue (dark colors), use a light color
+    // Para midnight y blue (colores oscuros), usar un color claro
     if (phoneColor.name === 'midnight' || phoneColor.name === 'blue') {
       return '#e2e2e2';
     }
     
-    // For graphite, use a darker gray that matches the actual iPhone
+    // Para graphite, usar un gris más oscuro que coincida con el iPhone real
     if (phoneColor.name === 'graphite') {
       return '#3a3a3c';
     }
     
-    // For gold, use a gold tint
+    // Para gold, usar un tinte dorado
     if (phoneColor.name === 'gold') {
       return '#d4af37';
     }
     
-    // For red, use a slightly darker red
+    // Para red, usar un rojo ligeramente más oscuro
     if (phoneColor.name === 'red') {
       return '#8a000d';
     }
     
-    // For other colors, use a color that matches the phone but is slightly darker
-    // This creates a subtle embossed effect
+    // Para otros colores, usar un color que coincida con el teléfono pero ligeramente más oscuro
+    // Esto crea un efecto de relieve sutil
     return darkenColor(phoneColor.colorCode, 20);
   };
   
@@ -216,7 +216,7 @@ export function CasePreview({
   
   return (
     <div className="relative flex flex-col items-center justify-center min-h-[600px]">
-      {/* Phone case container */}
+      {/* Contenedor de la funda del teléfono */}
       <div 
         ref={(node) => {
           drop(node as any);
@@ -232,11 +232,11 @@ export function CasePreview({
           transition: 'box-shadow 0.2s ease',
         }}
       >
-        {/* iPhone body with selected color */}
+        {/* Cuerpo del iPhone con el color seleccionado */}
         <div 
           className="absolute inset-0"
           style={{ 
-            backgroundColor: phoneColor?.colorCode || '#e2e2e7', // Default to silver if no color selected
+            backgroundColor: phoneColor?.colorCode || '#e2e2e7', // Por defecto plateado si no hay color seleccionado
             border: '2px solid #d1d1d6',
             boxShadow: 'inset 0 0 10px rgba(0, 0, 0, 0.1)',
             zIndex: 1,
@@ -244,7 +244,7 @@ export function CasePreview({
           }}
         />
         
-        {/* Transparent case overlay */}
+        {/* Superposición de la funda transparente */}
         <div 
           className="absolute inset-0"
           style={{
@@ -257,7 +257,7 @@ export function CasePreview({
           }}
         />
 
-        {/* Camera module - fixed to match actual iPhone 13 Pro appearance */}
+        {/* Módulo de cámara - fijo para coincidir con la apariencia real del iPhone 13 Pro */}
         <div 
           className="absolute"
           style={{
@@ -271,9 +271,9 @@ export function CasePreview({
             borderRadius: '1.5rem'
           }}
         >
-          {/* Camera square with rounded corners */}
+          {/* Cuadrado de la cámara con esquinas redondeadas */}
           <div className="relative w-full h-full rounded-xl overflow-hidden">
-            {/* Flash - top right */}
+            {/* Flash - arriba a la derecha */}
             <div 
               className="absolute rounded-full"
               style={{
@@ -286,7 +286,7 @@ export function CasePreview({
               }}
             ></div>
             
-            {/* Top-left camera */}
+            {/* Cámara superior izquierda */}
             <div 
               className="absolute rounded-full"
               style={{
@@ -308,7 +308,7 @@ export function CasePreview({
               ></div>
             </div>
             
-            {/* Bottom-left camera */}
+            {/* Cámara inferior izquierda */}
             <div 
               className="absolute rounded-full"
               style={{
@@ -330,7 +330,7 @@ export function CasePreview({
               ></div>
             </div>
             
-            {/* Right camera */}
+            {/* Cámara derecha */}
             <div 
               className="absolute rounded-full"
               style={{
@@ -352,7 +352,7 @@ export function CasePreview({
               ></div>
             </div>
             
-            {/* LiDAR sensor - bottom right */}
+            {/* Sensor LiDAR - abajo a la derecha */}
             <div 
               className="absolute rounded-full"
               style={{
@@ -367,7 +367,7 @@ export function CasePreview({
           </div>
         </div>
         
-        {/* Apple logo - with color matching the phone and embossed effect */}
+        {/* Logo de Apple - con color que coincide con el teléfono y efecto de relieve */}
         <div 
           className="absolute"
           style={{
@@ -397,7 +397,7 @@ export function CasePreview({
           </svg>
         </div>
         
-        {/* Placed charms - now with higher z-index to appear above the transparent case */}
+        {/* Dijes colocados - ahora con un z-index más alto para aparecer sobre la funda transparente */}
         {placedCharms.map((placedCharm) => (
           <PlacedCharmItem 
             key={placedCharm.id} 
@@ -408,12 +408,12 @@ export function CasePreview({
         ))}
       </div>
       
-      {/* Rotation instructions */}
+      {/* Instrucciones de rotación */}
       <div className="mt-2 text-xs text-gray-500 text-center">
-        <p>Tip: Hold Shift + drag to rotate charms</p>
+        <p>Consejo: Mantén Shift + arrastra para rotar los charms</p>
       </div>
       
-      {/* Trash bin for removing charms */}
+      {/* Papelera para eliminar dijes */}
       <div 
         ref={trashDrop as any}
         className="mt-6 p-4 rounded-lg border-2 cursor-pointer flex items-center justify-center"
@@ -430,7 +430,7 @@ export function CasePreview({
           color={isOverTrash ? '#ef4444' : '#6b7280'} 
         />
         <span className="ml-2 text-sm font-medium">
-          Clear
+          Limpiar
         </span>
       </div>
     </div>
@@ -452,11 +452,11 @@ function PlacedCharmItem({ placedCharm, onPositionUpdated, onRotationUpdated }: 
   const [isRotating, setIsRotating] = useState(false);
   const [currentRotation, setCurrentRotation] = useState(rotation);
   
-  // Get the scaled charm dimensions, using custom dimensions if provided
+  // Obtener las dimensiones escaladas del dije, usando dimensiones personalizadas si se proporcionan
   const getCharmDimensions = () => {
-    const scaleFactor = 0.6; // Same scale factor as used for the phone
+    const scaleFactor = 0.6; // Mismo factor de escala usado para el teléfono
     
-    // Use custom dimensions from the charm object if provided, otherwise use default
+    // Usar dimensiones personalizadas del objeto charm si se proporcionan, de lo contrario usar las predeterminadas
     const baseWidth = charm.width || IPHONE_13_PRO.charm.width;
     const baseHeight = charm.height || IPHONE_13_PRO.charm.height;
     
@@ -468,7 +468,7 @@ function PlacedCharmItem({ placedCharm, onPositionUpdated, onRotationUpdated }: 
   
   const charmDimensions = getCharmDimensions();
   
-  // Create a fixed-size preview image for dragging
+  // Crear una imagen de vista previa de tamaño fijo para arrastrar
   useEffect(() => {
     if (!previewRef.current) {
       previewRef.current = document.createElement('img');
@@ -489,7 +489,7 @@ function PlacedCharmItem({ placedCharm, onPositionUpdated, onRotationUpdated }: 
     };
   }, [charm.imageUrl, charmDimensions.width, charmDimensions.height]);
   
-  // Handle manual dragging without react-dnd
+  // Manejar el arrastre manual sin react-dnd
   useEffect(() => {
     if (!imageRef.current) return;
     
@@ -498,7 +498,7 @@ function PlacedCharmItem({ placedCharm, onPositionUpdated, onRotationUpdated }: 
     let isDraggingElement = false;
     
     const handleMouseDown = (e: MouseEvent) => {
-      // If user is holding Shift key, start rotation instead of dragging
+      // Si el usuario mantiene presionada la tecla Shift, iniciar rotación en lugar de arrastre
       if (e.shiftKey) {
         e.preventDefault();
         setIsRotating(true);
@@ -510,21 +510,21 @@ function PlacedCharmItem({ placedCharm, onPositionUpdated, onRotationUpdated }: 
       startX = e.clientX - position.x;
       startY = e.clientY - position.y;
       
-      // Prevent default behavior
+      // Prevenir comportamiento predeterminado
       e.preventDefault();
     };
     
     const handleMouseMove = (e: MouseEvent) => {
       if (isRotating) {
-        // Handle rotation
+        // Manejar rotación
         if (imageRef.current) {
           const rect = imageRef.current.getBoundingClientRect();
           const centerX = rect.left + rect.width / 2;
           const centerY = rect.top + rect.height / 2;
           
-          // Calculate angle between center of element and mouse position
+          // Calcular ángulo entre el centro del elemento y la posición del ratón
           const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX);
-          const degrees = angle * (180 / Math.PI) + 90; // +90 to make it feel more natural
+          const degrees = angle * (180 / Math.PI) + 90; // +90 para que se sienta más natural
           
           setCurrentRotation(degrees);
           
@@ -540,7 +540,7 @@ function PlacedCharmItem({ placedCharm, onPositionUpdated, onRotationUpdated }: 
       const newX = e.clientX - startX;
       const newY = e.clientY - startY;
       
-      // Update position directly for smooth dragging
+      // Actualizar posición directamente para un arrastre suave
       if (imageRef.current) {
         imageRef.current.style.left = `${newX}px`;
         imageRef.current.style.top = `${newY}px`;
@@ -550,7 +550,7 @@ function PlacedCharmItem({ placedCharm, onPositionUpdated, onRotationUpdated }: 
     const handleMouseUp = (e: MouseEvent) => {
       if (isRotating) {
         setIsRotating(false);
-        // Update rotation in parent component if callback exists
+        // Actualizar rotación en el componente padre si existe el callback
         if (onRotationUpdated) {
           onRotationUpdated(id, currentRotation);
         }
@@ -565,7 +565,7 @@ function PlacedCharmItem({ placedCharm, onPositionUpdated, onRotationUpdated }: 
       const newX = e.clientX - startX;
       const newY = e.clientY - startY;
       
-      // Check if we're dropping on the trash
+      // Comprobar si estamos soltando en la papelera
       const trashElement = document.querySelector('[data-trash-bin="true"]');
       if (trashElement) {
         const trashRect = trashElement.getBoundingClientRect();
@@ -575,16 +575,16 @@ function PlacedCharmItem({ placedCharm, onPositionUpdated, onRotationUpdated }: 
           e.clientY >= trashRect.top && 
           e.clientY <= trashRect.bottom
         ) {
-          // We're over the trash, don't update position
+          // Estamos sobre la papelera, no actualizar posición
           return;
         }
       }
       
-      // Update position in parent component
+      // Actualizar posición en el componente padre
       onPositionUpdated(id, { x: newX, y: newY });
     };
     
-    // Add event listeners
+    // Agregar event listeners
     imageRef.current.addEventListener('mousedown', handleMouseDown);
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', handleMouseUp);
@@ -598,7 +598,7 @@ function PlacedCharmItem({ placedCharm, onPositionUpdated, onRotationUpdated }: 
     };
   }, [id, position.x, position.y, onPositionUpdated, isRotating, onRotationUpdated, currentRotation]);
   
-  // Make placed charms draggable for repositioning with react-dnd (for trash bin)
+  // Hacer que los dijes colocados sean arrastrables para reposicionamiento con react-dnd (para la papelera)
   const [, drag] = useDrag({
     type: 'placed-charm',
     item: { id, type: 'placed-charm' },
@@ -607,7 +607,7 @@ function PlacedCharmItem({ placedCharm, onPositionUpdated, onRotationUpdated }: 
     }),
   });
   
-  // Combine refs
+  // Combinar refs
   const combinedRef = (node: HTMLDivElement | null) => {
     drag(node);
     imageRef.current = node;
@@ -639,16 +639,16 @@ function PlacedCharmItem({ placedCharm, onPositionUpdated, onRotationUpdated }: 
         draggable={false}
       />
       
-      {/* Rotation indicator - only show when actively rotating */}
+      {/* Indicador de rotación - solo mostrar cuando se está rotando activamente */}
       {isRotating && (
         <div className="absolute inset-0 border-2 border-blue-500 rounded-full flex items-center justify-center">
           <div className="h-1 w-1 bg-blue-500 rounded-full"></div>
         </div>
       )}
       
-      {/* Rotation instructions tooltip */}
+      {/* Tooltip de instrucciones de rotación */}
       <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 bg-black bg-opacity-75 text-white text-xs px-2 py-1 rounded pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
-        Hold Shift + drag to rotate
+        Mantén Shift + arrastra para rotar
       </div>
     </div>
   );

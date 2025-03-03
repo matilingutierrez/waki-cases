@@ -6,13 +6,13 @@ import { useDrag } from 'react-dnd';
 import { Charm } from '@/types/case-customizer';
 import { Skeleton } from '@/components/ui/skeleton';
 
-// iPhone 13 Pro charm dimensions - same as in case-preview.tsx
+// Dimensiones del dije para iPhone 13 Pro - igual que en case-preview.tsx
 const CHARM_DIMENSIONS = {
   width: 75,
   height: 75
 };
 
-// Scale factor for display
+// Factor de escala para visualización
 const SCALE_FACTOR = 0.6;
 
 export interface CharmSelectorProps {
@@ -24,7 +24,7 @@ export function CharmSelector({ charms, isLoading = false }: CharmSelectorProps)
   if (isLoading) {
     return (
       <div className="p-4 bg-white rounded-lg shadow-sm">
-        <h3 className="text-lg font-medium mb-4">Select Charms</h3>
+        <h3 className="text-lg font-medium mb-4">Seleccionar Charms</h3>
         <div className="grid grid-cols-3 gap-4">
           {[...Array(6)].map((_, index) => (
             <Skeleton key={index} className="w-full aspect-square rounded-md" />
@@ -36,7 +36,7 @@ export function CharmSelector({ charms, isLoading = false }: CharmSelectorProps)
 
   return (
     <div className="p-4 bg-white rounded-lg shadow-sm">
-      <h3 className="text-lg font-medium mb-4">Select Charms</h3>
+      <h3 className="text-lg font-medium mb-4">Seleccionar Charms</h3>
       <div className="grid grid-cols-3 gap-4">
         {charms.map((charm) => (
           <CharmItem key={charm.id} charm={charm} />
@@ -54,9 +54,9 @@ function CharmItem({ charm }: CharmItemProps) {
   const previewRef = useRef<HTMLImageElement | null>(null);
   const imageRef = useRef<HTMLDivElement | null>(null);
   
-  // Use fixed dimensions for all charms in the selector
+  // Usar dimensiones fijas para todos los dijes en el selector
   const getCharmDimensions = () => {
-    // Always use the default dimensions for the selector view
+    // Siempre usar las dimensiones predeterminadas para la vista del selector
     return {
       width: Math.round(CHARM_DIMENSIONS.width * SCALE_FACTOR),
       height: Math.round(CHARM_DIMENSIONS.height * SCALE_FACTOR)
@@ -65,13 +65,13 @@ function CharmItem({ charm }: CharmItemProps) {
   
   const charmDimensions = getCharmDimensions();
   
-  // Create a fixed-size preview image for dragging
+  // Crear una imagen de vista previa de tamaño fijo para arrastrar
   useEffect(() => {
     if (!previewRef.current) {
       previewRef.current = document.createElement('img');
       previewRef.current.src = charm.imageUrl;
       
-      // For the drag preview, use custom dimensions if provided
+      // Para la vista previa de arrastre, usar dimensiones personalizadas si se proporcionan
       const previewWidth = charm.width ? Math.round(charm.width * SCALE_FACTOR) : charmDimensions.width;
       const previewHeight = charm.height ? Math.round(charm.height * SCALE_FACTOR) : charmDimensions.height;
       
@@ -91,7 +91,7 @@ function CharmItem({ charm }: CharmItemProps) {
     };
   }, [charm.imageUrl, charm.width, charm.height, charmDimensions.width, charmDimensions.height]);
 
-  // Make charm draggable
+  // Hacer que el dije sea arrastrable
   const [{ isDragging }, drag] = useDrag({
     type: 'charm',
     item: { charm, type: 'charm' },
@@ -103,17 +103,17 @@ function CharmItem({ charm }: CharmItemProps) {
     },
   });
   
-  // Handle drag start to set custom preview
+  // Manejar el inicio del arrastre para establecer una vista previa personalizada
   useEffect(() => {
     const handleDragStart = (e: Event) => {
       if (!previewRef.current) return;
       
-      // Use our pre-created image for the drag preview
+      // Usar nuestra imagen pre-creada para la vista previa de arrastre
       const dragEvent = e as DragEvent;
       if (dragEvent.dataTransfer) {
         previewRef.current.style.display = 'block';
         
-        // For the drag preview, use custom dimensions if provided
+        // Para la vista previa de arrastre, usar dimensiones personalizadas si se proporcionan
         const previewWidth = charm.width ? Math.round(charm.width * SCALE_FACTOR) : charmDimensions.width;
         const previewHeight = charm.height ? Math.round(charm.height * SCALE_FACTOR) : charmDimensions.height;
         
@@ -123,7 +123,7 @@ function CharmItem({ charm }: CharmItemProps) {
           previewHeight / 2
         );
         
-        // Hide the preview after a short delay
+        // Ocultar la vista previa después de un breve retraso
         setTimeout(() => {
           if (previewRef.current) {
             previewRef.current.style.display = 'none';
@@ -132,7 +132,7 @@ function CharmItem({ charm }: CharmItemProps) {
       }
     };
     
-    // Add event listener to our element
+    // Agregar event listener a nuestro elemento
     if (imageRef.current) {
       imageRef.current.addEventListener('dragstart', handleDragStart);
     }
@@ -143,6 +143,14 @@ function CharmItem({ charm }: CharmItemProps) {
       }
     };
   }, [charm.width, charm.height, charmDimensions.width, charmDimensions.height]);
+
+  // Format price with commas
+  const formatPrice = (price: number) => {
+    return price.toLocaleString('es-ES', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+  };
 
   return (
     <div className="flex flex-col items-center">
@@ -167,7 +175,7 @@ function CharmItem({ charm }: CharmItemProps) {
       </div>
       <div className="mt-2 text-center">
         <p className="font-medium">{charm.name}</p>
-        <p className="text-sm text-gray-500">${charm.price.toFixed(2)}</p>
+        <p className="text-sm text-gray-500">${formatPrice(charm.price)}</p>
       </div>
     </div>
   );

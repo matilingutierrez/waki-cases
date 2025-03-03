@@ -21,7 +21,7 @@ export function CaseCustomizer() {
   const [selectedColor, setSelectedColor] = useState<PhoneColor | null>(null);
   const [placedCharms, setPlacedCharms] = useState<Array<{ id: string; charm: Charm; position: { x: number; y: number }; rotation?: number }>>([]);
 
-  // Auto-select iPhone 13 Pro when phone models are loaded
+  // Seleccionar automáticamente iPhone 13 Pro cuando se cargan los modelos de teléfono
   useEffect(() => {
     if (phoneModels.length > 0 && !selectedPhone) {
       const iphone13Pro = phoneModels[0];
@@ -31,7 +31,7 @@ export function CaseCustomizer() {
     }
   }, [phoneModels, selectedPhone]);
 
-  // Auto-select Silver color when colors are loaded
+  // Seleccionar automáticamente el color Plateado cuando se cargan los colores
   useEffect(() => {
     if (colors.length > 0 && !selectedColor) {
       const silverColor = colors.find(color => color.name === 'silver');
@@ -81,36 +81,44 @@ export function CaseCustomizer() {
   };
 
   const handlePlaceOrder = () => {
-    // In a real app, this would submit the order to a backend
-    alert(`Order placed for ${selectedPhone?.name} in ${selectedColor?.displayName} with ${placedCharms.length} charms!`);
-    console.log('Order details:', { selectedPhone, selectedColor, placedCharms });
+    // En una aplicación real, esto enviaría el pedido a un backend
+    alert(`Pedido realizado para ${selectedPhone?.name} en color ${selectedColor?.displayName} con ${placedCharms.length} charms!`);
+    console.log('Detalles del pedido:', { selectedPhone, selectedColor, placedCharms });
   };
 
-  // Calculate total price
-  const basePrice = 19.99;
+  // Calcular precio total
+  const basePrice = 10000;
   const charmsPrice = placedCharms.reduce((total, item) => total + item.charm.price, 0);
   const totalPrice = basePrice + charmsPrice;
 
-  // If no phone is selected or still loading, show loading state
+  // Format price with commas
+  const formatPrice = (price: number) => {
+    return price.toLocaleString('es-ES', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+  };
+
+  // Si no se ha seleccionado un teléfono o aún está cargando, mostrar estado de carga
   if (!selectedPhone || isLoadingPhones) {
     return (
       <div className="w-full mx-auto max-w-[1000px] p-6">
         <div className="p-6 rounded-lg border shadow-sm">
-          <h2 className="text-2xl font-semibold mb-6 text-center">Loading...</h2>
+          <h2 className="text-2xl font-semibold mb-6 text-center">Cargando...</h2>
         </div>
       </div>
     );
   }
 
-  // Show the full customizer once a phone is selected
+  // Mostrar el personalizador completo una vez que se ha seleccionado un teléfono
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="w-full mx-auto max-w-[1200px]">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Case preview and phone info */}
+          {/* Vista previa de la funda e información del teléfono */}
           <div className="space-y-2">
             <div className="p-4 rounded-lg border shadow-sm">
-              {/* Selected phone info */}
+              {/* Información del teléfono seleccionado */}
               <div className="mb-4 text-center">
                 <h2 className="text-xl font-semibold">{selectedPhone.name}</h2>
                 {selectedColor && (
@@ -130,24 +138,11 @@ export function CaseCustomizer() {
                 />
               </div>
             </div>
-
-            {/* Order button and total */}
-            <div className="flex justify-between items-center p-6 rounded-lg border shadow-sm">
-              <div className="text-lg font-semibold">
-                Total: ${totalPrice.toFixed(2)}
-              </div>
-              <Button 
-                size="lg" 
-                onClick={handlePlaceOrder}
-              >
-                Complete Order
-              </Button>
-            </div>
           </div>
 
-          {/* Charms and change phone */}
+          {/* Dijes y cambio de teléfono */}
           <div className="space-y-6">
-            {/* Color selector */}
+            {/* Selector de color */}
             <div className="p-6 rounded-lg border shadow-sm">
               <ColorSelector 
                 colors={colors}
@@ -157,11 +152,24 @@ export function CaseCustomizer() {
               />
             </div>
 
-            {/* Charms section */}
+            {/* Sección de dijes */}
             <div className="p-6 rounded-lg border shadow-sm">
               <div className="max-h-[400px] overflow-y-auto">
                 <CharmSelector charms={charms} isLoading={isLoadingCharms} />
               </div>
+            </div>
+            
+            {/* Order button and total - moved to this column */}
+            <div className="flex justify-between items-center p-6 rounded-lg border shadow-sm">
+              <div className="text-lg font-semibold">
+                Total: ${formatPrice(totalPrice)}
+              </div>
+              <Button 
+                size="lg" 
+                onClick={handlePlaceOrder}
+              >
+                Completar Pedido
+              </Button>
             </div>
           </div>
         </div>
