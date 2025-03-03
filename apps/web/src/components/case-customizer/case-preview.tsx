@@ -9,10 +9,11 @@ import { Trash2 } from 'lucide-react';
 export interface CasePreviewProps {
   phoneModel: PhoneModel;
   phoneColor: PhoneColor | null;
-  placedCharms: Array<{ id: string; charm: Charm; position: { x: number; y: number } }>;
+  placedCharms: Array<{ id: string; charm: Charm; position: { x: number; y: number }; rotation?: number }>;
   onCharmPlaced: (charm: Charm, position: { x: number; y: number }) => void;
   onCharmRemoved: (charmId: string) => void;
   onCharmPositionUpdated: (charmId: string, newPosition: { x: number; y: number }) => void;
+  onCharmRotationUpdated?: (charmId: string, newRotation: number) => void;
 }
 
 // iPhone 13 Pro viewport dimensions
@@ -30,7 +31,8 @@ export function CasePreview({
   placedCharms, 
   onCharmPlaced, 
   onCharmRemoved,
-  onCharmPositionUpdated
+  onCharmPositionUpdated,
+  onCharmRotationUpdated
 }: CasePreviewProps) {
   // Get the viewport dimensions for the iPhone 13 Pro
   const getPhoneDimensions = () => {
@@ -148,6 +150,38 @@ export function CasePreview({
     },
   });
   
+  // Function to darken a color by a percentage
+  const darkenColor = (color: string, percent: number) => {
+    // Remove the # if present
+    const hex = color.replace('#', '');
+    
+    // Parse the hex values
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    
+    // Calculate darker values
+    const darkerR = Math.floor(r * (1 - percent / 100));
+    const darkerG = Math.floor(g * (1 - percent / 100));
+    const darkerB = Math.floor(b * (1 - percent / 100));
+    
+    // Convert back to hex
+    return `#${darkerR.toString(16).padStart(2, '0')}${darkerG.toString(16).padStart(2, '0')}${darkerB.toString(16).padStart(2, '0')}`;
+  };
+  
+  // Get camera color based on phone color
+  const getCameraColor = () => {
+    if (!phoneColor) return '#1a1a1a'; // Default dark color
+    
+    // For very dark colors, use a slightly lighter shade
+    if (phoneColor.name === 'graphite' || phoneColor.name === 'midnight') {
+      return '#2a2a2a';
+    }
+    
+    // For other colors, darken the phone color by 40%
+    return darkenColor(phoneColor.colorCode, 40);
+  };
+  
   return (
     <div className="relative flex flex-col items-center justify-center min-h-[600px]">
       {/* Phone case container */}
@@ -189,7 +223,7 @@ export function CasePreview({
           }}
         />
 
-        {/* Camera module */}
+        {/* Camera module - now with color matching the phone */}
         <div 
           className="absolute rounded-2xl"
           style={{
@@ -197,7 +231,7 @@ export function CasePreview({
             height: cameraDimensions.height,
             left: '10%',
             top: '3%',
-            backgroundColor: '#1a1a1a',
+            backgroundColor: getCameraColor(),
             zIndex: 5
           }}
         >
@@ -233,8 +267,14 @@ export function CasePreview({
             key={placedCharm.id} 
             placedCharm={placedCharm} 
             onPositionUpdated={onCharmPositionUpdated}
+            onRotationUpdated={onCharmRotationUpdated}
           />
         ))}
+      </div>
+      
+      {/* Rotation instructions */}
+      <div className="mt-2 text-xs text-gray-500 text-center">
+        <p>Tip: Hold Shift + drag to rotate charms</p>
       </div>
       
       {/* Trash bin for removing charms */}
@@ -262,16 +302,19 @@ export function CasePreview({
 }
 
 interface PlacedCharmItemProps {
-  placedCharm: { id: string; charm: Charm; position: { x: number; y: number } };
+  placedCharm: { id: string; charm: Charm; position: { x: number; y: number }; rotation?: number };
   onPositionUpdated: (id: string, newPosition: { x: number; y: number }) => void;
+  onRotationUpdated?: (id: string, newRotation: number) => void;
 }
 
-function PlacedCharmItem({ placedCharm, onPositionUpdated }: PlacedCharmItemProps) {
-  const { id, charm, position } = placedCharm;
+function PlacedCharmItem({ placedCharm, onPositionUpdated, onRotationUpdated }: PlacedCharmItemProps) {
+  const { id, charm, position, rotation = 0 } = placedCharm;
   const previewRef = useRef<HTMLImageElement | null>(null);
   const imageRef = useRef<HTMLDivElement | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isOverTrash, setIsOverTrash] = useState(false);
+  const [isRotating, setIsRotating] = useState(false);
+  const [currentRotation, setCurrentRotation] = useState(rotation);
   
   // Get the scaled charm dimensions, using custom dimensions if provided
   const getCharmDimensions = () => {
@@ -319,6 +362,13 @@ function PlacedCharmItem({ placedCharm, onPositionUpdated }: PlacedCharmItemProp
     let isDraggingElement = false;
     
     const handleMouseDown = (e: MouseEvent) => {
+      // If user is holding Shift key, start rotation instead of dragging
+      if (e.shiftKey) {
+        e.preventDefault();
+        setIsRotating(true);
+        return;
+      }
+      
       isDraggingElement = true;
       setIsDragging(true);
       startX = e.clientX - position.x;
@@ -329,6 +379,26 @@ function PlacedCharmItem({ placedCharm, onPositionUpdated }: PlacedCharmItemProp
     };
     
     const handleMouseMove = (e: MouseEvent) => {
+      if (isRotating) {
+        // Handle rotation
+        if (imageRef.current) {
+          const rect = imageRef.current.getBoundingClientRect();
+          const centerX = rect.left + rect.width / 2;
+          const centerY = rect.top + rect.height / 2;
+          
+          // Calculate angle between center of element and mouse position
+          const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX);
+          const degrees = angle * (180 / Math.PI) + 90; // +90 to make it feel more natural
+          
+          setCurrentRotation(degrees);
+          
+          if (imageRef.current) {
+            imageRef.current.style.transform = `rotate(${degrees}deg)`;
+          }
+        }
+        return;
+      }
+      
       if (!isDraggingElement) return;
       
       const newX = e.clientX - startX;
@@ -342,6 +412,15 @@ function PlacedCharmItem({ placedCharm, onPositionUpdated }: PlacedCharmItemProp
     };
     
     const handleMouseUp = (e: MouseEvent) => {
+      if (isRotating) {
+        setIsRotating(false);
+        // Update rotation in parent component if callback exists
+        if (onRotationUpdated) {
+          onRotationUpdated(id, currentRotation);
+        }
+        return;
+      }
+      
       if (!isDraggingElement) return;
       
       isDraggingElement = false;
@@ -381,7 +460,7 @@ function PlacedCharmItem({ placedCharm, onPositionUpdated }: PlacedCharmItemProp
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [id, position.x, position.y, onPositionUpdated]);
+  }, [id, position.x, position.y, onPositionUpdated, isRotating, onRotationUpdated, currentRotation]);
   
   // Make placed charms draggable for repositioning with react-dnd (for trash bin)
   const [, drag] = useDrag({
@@ -410,6 +489,8 @@ function PlacedCharmItem({ placedCharm, onPositionUpdated }: PlacedCharmItemProp
         height: charmDimensions.height,
         zIndex: 20,
         touchAction: 'none',
+        transform: `rotate(${currentRotation}deg)`,
+        transformOrigin: 'center center',
         filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))',
       }}
       data-charm-id={id}
@@ -421,6 +502,18 @@ function PlacedCharmItem({ placedCharm, onPositionUpdated }: PlacedCharmItemProp
         style={{ objectFit: 'contain', pointerEvents: 'none' }}
         draggable={false}
       />
+      
+      {/* Rotation indicator - only show when actively rotating */}
+      {isRotating && (
+        <div className="absolute inset-0 border-2 border-blue-500 rounded-full flex items-center justify-center">
+          <div className="h-1 w-1 bg-blue-500 rounded-full"></div>
+        </div>
+      )}
+      
+      {/* Rotation instructions tooltip */}
+      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 bg-black bg-opacity-75 text-white text-xs px-2 py-1 rounded pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
+        Hold Shift + drag to rotate
+      </div>
     </div>
   );
 } 

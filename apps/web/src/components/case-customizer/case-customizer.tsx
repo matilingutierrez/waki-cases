@@ -19,7 +19,7 @@ export function CaseCustomizer() {
   const { colors, isLoading: isLoadingColors } = usePhoneColors();
   const [selectedPhone, setSelectedPhone] = useState<PhoneModel | null>(null);
   const [selectedColor, setSelectedColor] = useState<PhoneColor | null>(null);
-  const [placedCharms, setPlacedCharms] = useState<Array<{ id: string; charm: Charm; position: { x: number; y: number } }>>([]);
+  const [placedCharms, setPlacedCharms] = useState<Array<{ id: string; charm: Charm; position: { x: number; y: number }; rotation?: number }>>([]);
 
   // Auto-select iPhone 13 Pro when phone models are loaded
   useEffect(() => {
@@ -53,7 +53,7 @@ export function CaseCustomizer() {
 
   const handleCharmPlaced = (charm: Charm, position: { x: number; y: number }) => {
     const id = `${charm.id}-${Date.now()}`;
-    setPlacedCharms((prev) => [...prev, { id, charm, position }]);
+    setPlacedCharms((prev) => [...prev, { id, charm, position, rotation: 0 }]);
   };
 
   const handleCharmRemoved = (charmId: string) => {
@@ -65,6 +65,16 @@ export function CaseCustomizer() {
       prev.map((item) => 
         item.id === charmId 
           ? { ...item, position: newPosition } 
+          : item
+      )
+    );
+  };
+  
+  const handleCharmRotationUpdated = (charmId: string, newRotation: number) => {
+    setPlacedCharms((prev) => 
+      prev.map((item) => 
+        item.id === charmId 
+          ? { ...item, rotation: newRotation } 
           : item
       )
     );
@@ -116,6 +126,7 @@ export function CaseCustomizer() {
                   onCharmPlaced={handleCharmPlaced}
                   onCharmRemoved={handleCharmRemoved}
                   onCharmPositionUpdated={handleCharmPositionUpdated}
+                  onCharmRotationUpdated={handleCharmRotationUpdated}
                 />
               </div>
             </div>
