@@ -182,6 +182,38 @@ export function CasePreview({
     return darkenColor(phoneColor.colorCode, 40);
   };
   
+  // Get Apple logo color based on phone color
+  const getAppleLogoColor = () => {
+    if (!phoneColor) return '#999'; // Default gray color
+    
+    // For midnight and blue (dark colors), use a light color
+    if (phoneColor.name === 'midnight' || phoneColor.name === 'blue') {
+      return '#e2e2e2';
+    }
+    
+    // For graphite, use a darker gray that matches the actual iPhone
+    if (phoneColor.name === 'graphite') {
+      return '#3a3a3c';
+    }
+    
+    // For gold, use a gold tint
+    if (phoneColor.name === 'gold') {
+      return '#d4af37';
+    }
+    
+    // For red, use a slightly darker red
+    if (phoneColor.name === 'red') {
+      return '#8a000d';
+    }
+    
+    // For other colors, use a color that matches the phone but is slightly darker
+    // This creates a subtle embossed effect
+    return darkenColor(phoneColor.colorCode, 20);
+  };
+  
+  // Calculate the border radius for consistency
+  const borderRadiusValue = '2rem';
+  
   return (
     <div className="relative flex flex-col items-center justify-center min-h-[600px]">
       {/* Phone case container */}
@@ -192,59 +224,150 @@ export function CasePreview({
         }}
         id="phone-case"
         className="relative overflow-hidden"
-        style={{
-          width: dimensions.width,
+        style={{ 
+          width: dimensions.width, 
           height: dimensions.height,
           boxSizing: 'border-box',
-          borderRadius: '40px',
+          borderRadius: borderRadiusValue,
           transition: 'box-shadow 0.2s ease',
         }}
       >
         {/* iPhone body with selected color */}
         <div 
-          className="absolute inset-0 rounded-[40px]"
-          style={{
+          className="absolute inset-0"
+          style={{ 
             backgroundColor: phoneColor?.colorCode || '#e2e2e7', // Default to silver if no color selected
             border: '2px solid #d1d1d6',
             boxShadow: 'inset 0 0 10px rgba(0, 0, 0, 0.1)',
-            zIndex: 1
+            zIndex: 1,
+            borderRadius: borderRadiusValue
           }}
         />
         
         {/* Transparent case overlay */}
         <div 
-          className="absolute inset-0 rounded-[40px]"
+          className="absolute inset-0"
           style={{
             background: 'linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.1) 100%)',
             border: isDraggingOver || isOver ? '2px dashed #3b82f6' : '2px solid rgba(255,255,255,0.3)',
             boxShadow: '0 0 15px rgba(0, 0, 0, 0.1)',
             backdropFilter: 'blur(1px)',
-            zIndex: 10
+            zIndex: 10,
+            borderRadius: borderRadiusValue
           }}
         />
 
-        {/* Camera module - now with color matching the phone */}
+        {/* Camera module - fixed to match actual iPhone 13 Pro appearance */}
         <div 
-          className="absolute rounded-2xl"
+          className="absolute"
           style={{
             width: cameraDimensions.width,
             height: cameraDimensions.height,
-            left: '10%',
+            left: '5%',
             top: '3%',
             backgroundColor: getCameraColor(),
-            zIndex: 5
+            zIndex: 5,
+            padding: '8px',
+            borderRadius: '1.5rem'
           }}
         >
-          {/* Camera lenses */}
-          <div className="grid grid-cols-2 gap-2 p-2">
-            <div className="bg-black rounded-full aspect-square" style={{ boxShadow: 'inset 0 0 2px 1px rgba(0,0,0,0.5)' }}></div>
-            <div className="bg-black rounded-full aspect-square" style={{ boxShadow: 'inset 0 0 2px 1px rgba(0,0,0,0.5)' }}></div>
-            <div className="bg-black rounded-full aspect-square" style={{ boxShadow: 'inset 0 0 2px 1px rgba(0,0,0,0.5)' }}></div>
-            <div className="bg-black rounded-full aspect-square" style={{ boxShadow: 'inset 0 0 2px 1px rgba(0,0,0,0.5)' }}></div>
+          {/* Camera square with rounded corners */}
+          <div className="relative w-full h-full rounded-xl overflow-hidden">
+            {/* Flash - top right */}
+            <div 
+              className="absolute rounded-full"
+              style={{
+                width: '16%',
+                height: '16%',
+                right: '15%',
+                top: '8%',
+                background: 'radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(220,220,220,0.8) 70%)',
+                boxShadow: 'inset 0 0 2px 1px rgba(0,0,0,0.2)'
+              }}
+            ></div>
+            
+            {/* Top-left camera */}
+            <div 
+              className="absolute rounded-full"
+              style={{
+                width: '42%',
+                height: '42%',
+                left: '6%',
+                top: '6%',
+                backgroundColor: 'black',
+                boxShadow: 'inset 0 0 3px 2px rgba(0,0,0,0.5)',
+                border: '2px solid rgba(50,50,50,0.8)',
+                overflow: 'hidden'
+              }}
+            >
+              <div 
+                className="w-full h-full rounded-full" 
+                style={{ 
+                  background: 'radial-gradient(circle at 35% 35%, rgba(0,0,255,0.1) 0%, rgba(0,0,0,0.9) 70%)'
+                }}
+              ></div>
+            </div>
+            
+            {/* Bottom-left camera */}
+            <div 
+              className="absolute rounded-full"
+              style={{
+                width: '42%',
+                height: '42%',
+                left: '6%',
+                top: '54%',
+                backgroundColor: 'black',
+                boxShadow: 'inset 0 0 3px 2px rgba(0,0,0,0.5)',
+                border: '2px solid rgba(50,50,50,0.8)',
+                overflow: 'hidden'
+              }}
+            >
+              <div 
+                className="w-full h-full rounded-full" 
+                style={{ 
+                  background: 'radial-gradient(circle at 35% 35%, rgba(0,0,255,0.1) 0%, rgba(0,0,0,0.9) 70%)'
+                }}
+              ></div>
+            </div>
+            
+            {/* Right camera */}
+            <div 
+              className="absolute rounded-full"
+              style={{
+                width: '42%',
+                height: '42%',
+                right: '6%',
+                top: '30%',
+                backgroundColor: 'black',
+                boxShadow: 'inset 0 0 3px 2px rgba(0,0,0,0.5)',
+                border: '2px solid rgba(50,50,50,0.8)',
+                overflow: 'hidden'
+              }}
+            >
+              <div 
+                className="w-full h-full rounded-full" 
+                style={{ 
+                  background: 'radial-gradient(circle at 35% 35%, rgba(0,0,255,0.1) 0%, rgba(0,0,0,0.9) 70%)'
+                }}
+              ></div>
+            </div>
+            
+            {/* LiDAR sensor - bottom right */}
+            <div 
+              className="absolute rounded-full"
+              style={{
+                width: '16%',
+                height: '16%',
+                right: '15%',
+                bottom: '8%',
+                backgroundColor: '#333',
+                boxShadow: 'inset 0 0 2px 1px rgba(0,0,0,0.5)'
+              }}
+            ></div>
           </div>
         </div>
         
-        {/* Apple logo - adjust color based on phone color */}
+        {/* Apple logo - with color matching the phone and embossed effect */}
         <div 
           className="absolute"
           style={{
@@ -253,10 +376,23 @@ export function CasePreview({
             left: '50%',
             top: '50%',
             transform: 'translate(-50%, -50%)',
-            zIndex: 5
+            zIndex: 5,
+            filter: 'drop-shadow(0px 1px 1px rgba(255,255,255,0.3))',
+            opacity: 0.9
           }}
         >
-          <svg viewBox="0 0 170 170" fill={phoneColor?.name === 'graphite' || phoneColor?.name === 'midnight' ? '#e2e2e2' : '#999'} xmlns="http://www.w3.org/2000/svg">
+          <svg 
+            viewBox="0 0 170 170" 
+            fill={getAppleLogoColor()} 
+            xmlns="http://www.w3.org/2000/svg"
+            style={{
+              filter: phoneColor?.name === 'midnight' || phoneColor?.name === 'blue' 
+                ? 'drop-shadow(0px 1px 1px rgba(0,0,0,0.5))' 
+                : phoneColor?.name === 'graphite'
+                  ? 'drop-shadow(0px 1px 1px rgba(255,255,255,0.2))'
+                  : 'drop-shadow(0px 1px 1px rgba(0,0,0,0.2))'
+            }}
+          >
             <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.197-2.12-9.973-3.17-14.34-3.17-4.58 0-9.492 1.05-14.746 3.17-5.262 2.13-9.501 3.24-12.742 3.35-4.929 0.21-9.842-1.96-14.746-6.52-3.13-2.73-7.045-7.41-11.735-14.04-5.032-7.08-9.169-15.29-12.41-24.65-3.471-10.11-5.211-19.9-5.211-29.378 0-10.857 2.346-20.221 7.045-28.068 3.693-6.303 8.606-11.275 14.755-14.925s12.793-5.51 19.948-5.629c3.915 0 9.049 1.211 15.429 3.591 6.362 2.388 10.447 3.599 12.238 3.599 1.339 0 5.877-1.416 13.57-4.239 7.275-2.618 13.415-3.702 18.445-3.275 13.63 1.1 23.87 6.473 30.68 16.153-12.19 7.386-18.22 17.731-18.1 31.002 0.11 10.337 3.86 18.939 11.23 25.769 3.34 3.17 7.07 5.62 11.22 7.36-0.9 2.61-1.85 5.11-2.86 7.51zM119.11 7.24c0 8.102-2.96 15.667-8.86 22.669-7.12 8.324-15.732 13.134-25.071 12.375-0.119-0.972-0.188-1.995-0.188-3.07 0-7.778 3.386-16.102 9.399-22.908 3.002-3.446 6.82-6.311 11.45-8.597 4.62-2.252 8.99-3.497 13.1-3.71 0.12 1.083 0.17 2.166 0.17 3.24z"/>
           </svg>
         </div>
