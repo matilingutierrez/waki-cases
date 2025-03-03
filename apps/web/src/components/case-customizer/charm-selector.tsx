@@ -6,6 +6,15 @@ import { useDrag } from 'react-dnd';
 import { Charm } from '@/types/case-customizer';
 import { Skeleton } from '@/components/ui/skeleton';
 
+// iPhone 13 Pro charm dimensions - same as in case-preview.tsx
+const CHARM_DIMENSIONS = {
+  width: 75,
+  height: 75
+};
+
+// Scale factor for display
+const SCALE_FACTOR = 0.6;
+
 export interface CharmSelectorProps {
   charms: Charm[];
   isLoading?: boolean;
@@ -43,15 +52,31 @@ interface CharmItemProps {
 
 function CharmItem({ charm }: CharmItemProps) {
   const previewRef = useRef<HTMLImageElement | null>(null);
-  const elementRef = useRef<HTMLDivElement | null>(null);
+  const imageRef = useRef<HTMLDivElement | null>(null);
+  
+  // Use fixed dimensions for all charms in the selector
+  const getCharmDimensions = () => {
+    // Always use the default dimensions for the selector view
+    return {
+      width: Math.round(CHARM_DIMENSIONS.width * SCALE_FACTOR),
+      height: Math.round(CHARM_DIMENSIONS.height * SCALE_FACTOR)
+    };
+  };
+  
+  const charmDimensions = getCharmDimensions();
   
   // Create a fixed-size preview image for dragging
   useEffect(() => {
     if (!previewRef.current) {
       previewRef.current = document.createElement('img');
       previewRef.current.src = charm.imageUrl;
-      previewRef.current.width = 40;
-      previewRef.current.height = 40;
+      
+      // For the drag preview, use custom dimensions if provided
+      const previewWidth = charm.width ? Math.round(charm.width * SCALE_FACTOR) : charmDimensions.width;
+      const previewHeight = charm.height ? Math.round(charm.height * SCALE_FACTOR) : charmDimensions.height;
+      
+      previewRef.current.width = previewWidth;
+      previewRef.current.height = previewHeight;
       previewRef.current.style.objectFit = 'contain';
       previewRef.current.style.opacity = '1';
       document.body.appendChild(previewRef.current);
@@ -64,7 +89,7 @@ function CharmItem({ charm }: CharmItemProps) {
         previewRef.current = null;
       }
     };
-  }, [charm.imageUrl]);
+  }, [charm.imageUrl, charm.width, charm.height, charmDimensions.width, charmDimensions.height]);
 
   // Make charm draggable
   const [{ isDragging }, drag] = useDrag({
@@ -87,7 +112,16 @@ function CharmItem({ charm }: CharmItemProps) {
       const dragEvent = e as DragEvent;
       if (dragEvent.dataTransfer) {
         previewRef.current.style.display = 'block';
-        dragEvent.dataTransfer.setDragImage(previewRef.current, 20, 20);
+        
+        // For the drag preview, use custom dimensions if provided
+        const previewWidth = charm.width ? Math.round(charm.width * SCALE_FACTOR) : charmDimensions.width;
+        const previewHeight = charm.height ? Math.round(charm.height * SCALE_FACTOR) : charmDimensions.height;
+        
+        dragEvent.dataTransfer.setDragImage(
+          previewRef.current, 
+          previewWidth / 2, 
+          previewHeight / 2
+        );
         
         // Hide the preview after a short delay
         setTimeout(() => {
@@ -99,39 +133,42 @@ function CharmItem({ charm }: CharmItemProps) {
     };
     
     // Add event listener to our element
-    if (elementRef.current) {
-      elementRef.current.addEventListener('dragstart', handleDragStart);
+    if (imageRef.current) {
+      imageRef.current.addEventListener('dragstart', handleDragStart);
     }
     
     return () => {
-      if (elementRef.current) {
-        elementRef.current.removeEventListener('dragstart', handleDragStart);
+      if (imageRef.current) {
+        imageRef.current.removeEventListener('dragstart', handleDragStart);
       }
     };
-  }, [charm.id]);
+  }, [charm.width, charm.height, charmDimensions.width, charmDimensions.height]);
 
   return (
-    <div
-      ref={(node) => {
-        drag(node as any);
-        elementRef.current = node;
-      }}
-      className={`flex flex-col items-center p-2 rounded-lg cursor-move transition-opacity ${
-        isDragging ? 'opacity-50' : 'opacity-100'
-      }`}
-      data-drag-type="charm"
-    >
-      <div className="relative w-16 h-16 mb-2">
+    <div className="flex flex-col items-center">
+      <div
+        ref={(node) => {
+          drag(node as any);
+          imageRef.current = node;
+        }}
+        className={`relative cursor-grab ${isDragging ? 'opacity-50' : 'opacity-100'}`}
+        style={{
+          width: charmDimensions.width,
+          height: charmDimensions.height
+        }}
+      >
         <Image
           src={charm.imageUrl}
           alt={charm.name}
           fill
-          className="object-contain"
-          draggable="true"
+          style={{ objectFit: 'contain' }}
+          draggable
         />
       </div>
-      <span className="text-sm text-center">{charm.name}</span>
-      <span className="text-xs text-gray-500">${charm.price.toFixed(2)}</span>
+      <div className="mt-2 text-center">
+        <p className="font-medium">{charm.name}</p>
+        <p className="text-sm text-gray-500">${charm.price.toFixed(2)}</p>
+      </div>
     </div>
   );
 } 

@@ -6,33 +6,8 @@ import { PhoneModel } from '@/types/case-customizer';
 // Mock data for phone models
 const mockPhoneModels: PhoneModel[] = [
   {
-    id: 'iphone-15-pro',
-    name: 'iPhone 15 Pro',
-    caseImageUrl: 'https://placehold.co/300x600/ffffff/00000000',
-  },
-  {
-    id: 'iphone-15',
-    name: 'iPhone 15',
-    caseImageUrl: 'https://placehold.co/300x600/ffffff/00000000',
-  },
-  {
-    id: 'iphone-14-pro',
-    name: 'iPhone 14 Pro',
-    caseImageUrl: 'https://placehold.co/300x600/ffffff/00000000',
-  },
-  {
-    id: 'iphone-14',
-    name: 'iPhone 14',
-    caseImageUrl: 'https://placehold.co/300x600/ffffff/00000000',
-  },
-  {
-    id: 'samsung-s23',
-    name: 'Samsung Galaxy S23',
-    caseImageUrl: 'https://placehold.co/300x600/ffffff/00000000',
-  },
-  {
-    id: 'pixel-7',
-    name: 'Google Pixel 7',
+    id: 'iphone-13-pro',
+    name: 'iPhone 13 Pro',
     caseImageUrl: 'https://placehold.co/300x600/ffffff/00000000',
   },
 ];
